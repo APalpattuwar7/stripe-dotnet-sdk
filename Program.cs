@@ -1,7 +1,13 @@
+﻿using Microsoft.Extensions.Hosting;
+
 var builder = WebApplication.CreateBuilder(args);
+
+DotNetEnv.Env.Load();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
+//builder.UseWebRoot("../client");
 
 var app = builder.Build();
 
@@ -14,10 +20,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
-
+app.UseFileServer();
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapRazorPages();
