@@ -1,21 +1,25 @@
 ﻿using Microsoft.Extensions.Hosting;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    WebRootPath = "client"
+});
 
 DotNetEnv.Env.Load();
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.Configure<StripeOptions>(options => {
+    options.SecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
+    options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY");
+    options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_KEY");
+})
 builder.Services.AddControllersWithViews();
-//builder.UseWebRoot("../client");
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -24,6 +28,11 @@ app.UseFileServer();
 app.UseRouting();
 app.UseAuthorization();
 
-app.MapRazorPages();
+app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
 
 app.Run();
