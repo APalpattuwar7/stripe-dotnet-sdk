@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extension.Options;
+using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using Stripe;
 
 public class PaymentController : Controller
@@ -10,5 +11,14 @@ public class PaymentController : Controller
     public PaymentController(IOptions<StripeOptions> options)
     {
         this.options = options;
+    }
+
+    [HttpGet("public-keys")]
+    public ActionResult<PublicKeyResponse> GetPublicKeys()
+    {
+        return new PublicKeyResponse
+        {
+            PublicKey = this.options.Value.PublishableKey,
+        };
     }
 }

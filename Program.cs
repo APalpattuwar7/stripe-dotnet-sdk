@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -12,8 +13,13 @@ builder.Services.Configure<StripeOptions>(options => {
     options.SecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET_KEY");
     options.PublishableKey = Environment.GetEnvironmentVariable("STRIPE_PUBLISHABLE_KEY");
     options.WebhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_KEY");
-})
-builder.Services.AddControllersWithViews();
+});
+builder.Services.AddControllersWithViews().AddNewtonsoftJson(options => {
+    options.SerializerSettings.ContractResolver = new DefaultContractResolver
+    {
+        NamingStrategy = new SnakeCaseNamingStrategy(),
+    };
+});
 
 var app = builder.Build();
 
