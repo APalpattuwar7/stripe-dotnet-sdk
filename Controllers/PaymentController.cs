@@ -21,4 +21,13 @@ public class PaymentController : Controller
             PublicKey = this.options.Value.PublishableKey,
         };
     }
+
+    [HttpPost("my-route")]
+    public ActionResult<MyRouteResponse> MyRoute([FromBody]MyRouteRequest request)
+    {
+        return new MyRouteResponse
+        {
+            Options = request,
+        };
+    }
 }
